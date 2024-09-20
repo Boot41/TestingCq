@@ -1,112 +1,94 @@
 import React, { useState } from 'react';
 
-// EmployerDashboard Component
-const EmployerDashboard = () => {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  
-  const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
-  };
+// Header component
+const Header = ({ toggleSidebar }) => (
+  <header className="flex justify-between items-center p-4 shadow-lg bg-white">
+    <h1 className="text-xl font-bold">Employer Dashboard</h1>
+    <button 
+      onClick={toggleSidebar} 
+      className="p-2 bg-gray-200 rounded"
+      aria-label="Toggle Sidebar"
+    >
+      ☰
+    </button>
+  </header>
+);
 
-  const toggleSidebarVisibility = () => {
-    setIsSidebarVisible(!isSidebarVisible);
-  };
+// Sidebar component
+const Sidebar = ({ isOpen, toggleSidebar }) => (
+  <aside 
+    className={`transition-all duration-300 ${isOpen ? 'w-1/4' : 'w-16'} bg-gray-800 text-white`}
+    aria-hidden={!isOpen}
+  >
+    <nav>
+      <a href="#job-postings" className="block p-4 hover:bg-blue-500" aria-current="page">
+        {isOpen ? 'Job Postings' : 'JP'}
+      </a>
+      <a href="#dashboard" className="block p-4 hover:bg-blue-500">
+        {isOpen ? 'Dashboard' : 'D'}
+      </a>
+    </nav>
+  </aside>
+);
 
-  return (
-    <div className="flex flex-col h-screen bg-white">
-      {/* Header */}
-      <header className="bg-gray-200 shadow-md p-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">Employer Dashboard</h1>
-          <button onClick={toggleSidebarVisibility} aria-label="Toggle Sidebar" className="md:hidden">
-            {/* Hamburger Icon */}
-            ☰
-          </button>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <div className="flex flex-1">
-        {/* Sidebar */}
-        {isSidebarVisible && (
-          <aside className={`bg-gray-800 text-white transition-width duration-300 ${isSidebarCollapsed ? 'w-16' : 'w-1/4'}`}>
-            <div className="flex items-center justify-between p-2">
-              {/* Sidebar Toggle Button */}
-              <button onClick={toggleSidebar} aria-label="Collapse Sidebar">
-                {isSidebarCollapsed ? '>' : '<'}
-              </button>
-            </div>
-            <nav>
-              <ul>
-                <li className={`p-2 ${isSidebarCollapsed ? 'flex justify-center' : ''}`}>
-                  <a href="/job-postings" className={`block ${isSidebarCollapsed ? 'text-center' : ''}`}>
-                    {isSidebarCollapsed ? 'P' : 'Job Postings'}
-                  </a>
-                </li>
-                <li className={`p-2 ${isSidebarCollapsed ? 'flex justify-center' : ''}`}>
-                  <a href="/dashboard" className={`block ${isSidebarCollapsed ? 'text-center' : ''}`}>
-                    {isSidebarCollapsed ? 'D' : 'Dashboard'}
-                  </a>
-                </li>
-              </ul>
-            </nav>
-          </aside>
-        )}
-
-        {/* Main Area */}
-        <main className="flex-1 p-4">
-          {/* Job Posting Form */}
-          <JobPostingForm onPostSuccess={() => alert('Job posted successfully!')} />
-
-          {/* Job Listing Manager */}
-          <JobListingManager />
-
-          {/* Success Notification */}
-          <JobPostSuccessNotification />
-        </main>
-      </div>
-    </div>
-  );
-};
-
-// JobPostingForm Component
+// JobPostingForm component
 const JobPostingForm = ({ onPostSuccess }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Simulate form submission
     onPostSuccess();
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 p-4 border border-gray-300 shadow-md">
-      <h2 className="text-lg font-bold mb-2">Post a Job</h2>
-      {/* Form Fields */}
-      <input type="text" placeholder="Job Title" className="block w-full p-2 mb-2 border" required />
-      <textarea placeholder="Job Description" className="block w-full p-2 mb-2 border" required />
-      <button type="submit" className="bg-blue-500 text-white p-2">Post Job</button>
+    <form onSubmit={handleSubmit} className="p-4 border border-gray-300">
+      <h2 className="font-bold">Post a Job</h2>
+      <input type="text" placeholder="Job Title" required className="p-2 w-full border border-gray-300" />
+      <textarea placeholder="Job Description" required className="p-2 w-full border border-gray-300" />
+      <button type="submit" className="mt-2 p-2 bg-blue-500 text-white">Post Job</button>
     </form>
   );
 };
 
-// JobListingManager Component (Placeholder)
-const JobListingManager = () => {
+// JobListingManager component
+const JobListingManager = () => (
+  <div className="p-4 border border-gray-300">
+    <h2 className="font-bold">Current Job Listings</h2>
+    <p>No listings available.</p>
+  </div>
+);
+
+// JobPostSuccessNotification component
+const JobPostSuccessNotification = ({ message }) => (
+  <div className={`p-4 bg-green-100 border border-green-300 text-green-700`} role="alert">
+    {message}
+  </div>
+);
+
+// EmployerDashboard component
+const EmployerDashboard = () => {
+  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [notification, setNotification] = useState('');
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleSuccess = () => {
+    setNotification('Job posted successfully!');
+    setTimeout(() => setNotification(''), 3000); // remove notification after 3 seconds
+  };
+
   return (
-    <div className="p-4 border border-gray-300 shadow-md">
-      <h2 className="text-lg font-bold mb-2">Job Listings</h2>
-      {/* Placeholder for Job Listings */}
-      <p>No job listings available.</p>
+    <div className="flex flex-col md:flex-row h-screen">
+      <Header toggleSidebar={toggleSidebar} />
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <main className="flex-1 p-4">
+        {notification && <JobPostSuccessNotification message={notification} />}
+        <JobPostingForm onPostSuccess={handleSuccess} />
+        <JobListingManager />
+      </main>
     </div>
   );
 };
 
-// JobPostSuccessNotification Component
-const JobPostSuccessNotification = () => {
-  return (
-    <div className="fixed bottom-4 right-4 bg-green-100 border border-green-300 text-green-800 p-4 shadow-md" role="alert">
-      Job posted successfully!
-    </div>
-  );
-};
-
-// Export the EmployerDashboard component
 export default EmployerDashboard;
