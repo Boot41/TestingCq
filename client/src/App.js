@@ -6,6 +6,7 @@ import EmployerDashboard from './pages/EmployerDashboard';
 import EditJobPage from './pages/EditJobPage';
 import JobSearchPage from './pages/JobSearchPage';
 import JobDetailPage from './pages/JobDetailPage';
+import JobApplicationPage from './pages/JobApplicationPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/edit-job" element={<EditJobPage />} />
         <Route path="/job-search" element={<JobSearchPage />} />
         <Route path="/job-detail" element={<JobDetailPage />} />
+        <Route path="/job-application" element={<JobApplicationPage />} />
       </Routes>
       <Footer />
     </Router>
