@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import EmployerDashboard from './pages/EmployerDashboard';
 import EditJobPage from './pages/EditJobPage';
 import JobSearchPage from './pages/JobSearchPage';
+import JobDetailPage from './pages/JobDetailPage';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/employer-dashboard" element={<EmployerDashboard />} />
         <Route path="/edit-job" element={<EditJobPage />} />
         <Route path="/job-search" element={<JobSearchPage />} />
+        <Route path="/job-detail" element={<JobDetailPage />} />
       </Routes>
       <Footer />
     </Router>
