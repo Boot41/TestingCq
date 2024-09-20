@@ -10,6 +10,8 @@ import JobApplicationPage from './pages/JobApplicationPage';
 import ApplicationTrackingPage from './pages/ApplicationTrackingPage';
 import EditApplicationPage from './pages/EditApplicationPage';
 import ApplicantManagementPage from './pages/ApplicantManagementPage';
+import ProfileEditPage from './pages/ProfileEditPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
         <Route path="/application-tracking" element={<ApplicationTrackingPage />} />
         <Route path="/edit-application" element={<EditApplicationPage />} />
         <Route path="/applicant-management" element={<ApplicantManagementPage />} />
+        <Route path="/profile-edit" element={<ProfileEditPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
       <Footer />
     </Router>

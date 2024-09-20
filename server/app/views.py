@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views import View
-from .models import Job, JobApplication
+from .models import Job, JobApplication, JobSeekerProfile
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 import json
@@ -12,49 +12,42 @@ class JobView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class JobApplicationView(View):
-    def post(self, request, job_id):
+    # Existing application methods omitted for brevity
+
+@method_decorator(csrf_exempt, name='dispatch')
+class JobSeekerProfileView(View):
+    def post(self, request):
         try:
-            seeker_data = json.loads(request.body)
-            seeker_id = seeker_data['seeker_id']
-            job = get_object_or_404(Job, id=job_id)
-            application = JobApplication.objects.create(job=job, seeker_id=seeker_id)
-            return JsonResponse({'message': 'Application submitted successfully', 'application_id': application.id}, status=201)
+            profile_data = json.loads(request.body)
+            profile = JobSeekerProfile.objects.create(
+                work_history=profile_data['work_history'],
+                skills=profile_data['skills'],
+                education=profile_data['education']
+            )
+            return JsonResponse({'message': 'Profile created successfully', 'seeker_id': profile.seeker_id}, status=201)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-    def get(self, request, job_id):
+    def get(self, request, seeker_id):
         try:
-            applications = JobApplication.objects.filter(job_id=job_id)
-            applications_list = [{'seeker_id': app.seeker_id, 'status': app.status, 'applied_at': app.applied_at} for app in applications]
-            return JsonResponse(applications_list, safe=False, status=200)
+            profile = get_object_or_404(JobSeekerProfile, seeker_id=seeker_id)
+            return JsonResponse({
+                'seeker_id': profile.seeker_id,
+                'work_history': profile.work_history,
+                'skills': profile.skills,
+                'education': profile.education
+            }, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-    def put(self, request, application_id):
+    def put(self, request, seeker_id):
         try:
-            application = get_object_or_404(JobApplication, id=application_id)
+            profile = get_object_or_404(JobSeekerProfile, seeker_id=seeker_id)
             update_data = json.loads(request.body)
-            application.status = update_data.get('status', application.status)
-            application.save()
-            return JsonResponse({'message': 'Application updated successfully', 'application_id': application.id}, status=200)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-
-    def delete(self, request, application_id):
-        try:
-            application = get_object_or_404(JobApplication, id=application_id)
-            application.delete()
-            return JsonResponse({'message': 'Application withdrawn successfully'}, status=204)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
-
-    def post_interview(self, request, application_id):
-        try:
-            interview_data = json.loads(request.body)
-            interview_time = interview_data['time']
-            application = get_object_or_404(JobApplication, id=application_id)
-            # Assume there is a method to schedule an interview
-            # schedule_interview(application, interview_time)
-            return JsonResponse({'message': 'Interview scheduled successfully for application_id: {}'.format(application_id)}, status=201)
+            profile.work_history = update_data.get('work_history', profile.work_history)
+            profile.skills = update_data.get('skills', profile.skills)
+            profile.education = update_data.get('education', profile.education)
+            profile.save()
+            return JsonResponse({'message': 'Profile updated successfully', 'seeker_id': profile.seeker_id}, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
