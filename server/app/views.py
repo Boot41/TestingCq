@@ -29,3 +29,21 @@ class JobApplicationView(View):
             return JsonResponse(applications_list, safe=False, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+
+    def put(self, request, application_id):
+        try:
+            application = get_object_or_404(JobApplication, id=application_id)
+            update_data = json.loads(request.body)
+            application.status = update_data.get('status', application.status)
+            application.save()
+            return JsonResponse({'message': 'Application updated successfully', 'application_id': application.id}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    def delete(self, request, application_id):
+        try:
+            application = get_object_or_404(JobApplication, id=application_id)
+            application.delete()
+            return JsonResponse({'message': 'Application withdrawn successfully'}, status=204)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
