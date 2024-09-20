@@ -1,76 +1,70 @@
-import React from 'react';
-import ApplicantManager from './ApplicantManager';
-import './App.css'; // Assuming a CSS file for additional styles if needed
+import React, { useState } from 'react';
 
-const App = () => {
+// Main page layout component
+const ApplicantManagementPage = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <header className="sticky top-0 bg-white shadow-md z-10">
-        <h1 className="text-2xl font-bold p-4">Applicant Management System</h1>
+    <div className="min-h-screen bg-white">
+      <header className="p-4 shadow-md bg-gray-800 text-white text-lg">
+        Applicant Management System
       </header>
-      <main className="flex-grow p-4">
+      <main className="p-4">
         <ApplicantManager />
       </main>
     </div>
   );
 };
 
-export default App;
-
-// ApplicantManager Component
+// Applicant manager component to display applicants
 const ApplicantManager = () => {
-  // Example state for applicants
-  const [applicants, setApplicants] = React.useState([]);
+  const [applicants, setApplicants] = useState([
+    { id: 1, name: 'John Doe', status: 'Pending' },
+    { id: 2, name: 'Jane Smith', status: 'Interview Scheduled' }
+  ]);
+
+  const updateStatus = (id, newStatus) => {
+    setApplicants(applicants.map(app => (app.id === id ? { ...app, status: newStatus } : app)));
+  };
 
   return (
     <div className="space-y-4">
       {applicants.map(applicant => (
-        <div key={applicant.id} className="border p-4 rounded-md shadow">
-          <h2 className="text-xl">{applicant.name}</h2>
-          <ApplicationStatusUpdater applicant={applicant} />
+        <div key={applicant.id} className="p-4 shadow-lg rounded-md">
+          <h3 className="font-semibold">{applicant.name}</h3>
+          <p>Status: {applicant.status}</p>
+          <ApplicationStatusUpdater applicant={applicant} onUpdateStatus={updateStatus} />
+          <InterviewScheduler applicant={applicant} />
         </div>
       ))}
     </div>
   );
 };
 
-// ApplicationStatusUpdater Component
-const ApplicationStatusUpdater = ({ applicant }) => {
-  const [status, setStatus] = React.useState(applicant.status || '');
-
-  const handleStatusChange = (e) => {
-    setStatus(e.target.value);
-  };
-
-  const handleUpdate = () => {
-    // Logic to update status
-    console.log(`Updated status for ${applicant.name}: ${status}`);
+// Component to update application status
+const ApplicationStatusUpdater = ({ applicant, onUpdateStatus }) => {
+  const handleStatusChange = () => {
+    onUpdateStatus(applicant.id, 'Updated Status'); // Example status update
   };
 
   return (
-    <div className="mt-2">
-      <label htmlFor={`status-${applicant.id}`} className="mr-2">
-        Status:
-      </label>
-      <select
-        id={`status-${applicant.id}`}
-        value={status}
-        onChange={handleStatusChange}
-        className="p-2 border rounded"
-        aria-label="Applicant status"
-      >
-        <option value="Pending">Pending</option>
-        <option value="Interview">Interview</option>
-        <option value="Hired">Hired</option>
-        <option value="Rejected">Rejected</option>
-      </select>
-      <button
-        onClick={handleUpdate}
-        className="ml-2 p-2 bg-blue-500 text-white rounded"
-        aria-label={`Update status for ${applicant.name}`}
-      >
-        Update
-      </button>
-    </div>
+    <button onClick={handleStatusChange} className="mt-2 bg-blue-500 text-white px-4 py-2 rounded">
+      Update Status
+    </button>
   );
 };
+
+// Interview scheduler component
+const InterviewScheduler = ({ applicant }) => {
+  const scheduleInterview = () => {
+    // Logic to schedule an interview
+    alert(`Interview scheduled for ${applicant.name}`);
+  };
+
+  return (
+    <button onClick={scheduleInterview} className="mt-2 bg-green-500 text-white px-4 py-2 rounded">
+      Schedule Interview
+    </button>
+  );
+};
+
+// Export the main component
+export default ApplicantManagementPage;
