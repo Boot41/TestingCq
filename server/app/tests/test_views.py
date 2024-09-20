@@ -21,6 +21,18 @@ class JobViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertGreater(len(response.json()), 0)  # ensure there's at least one job
 
+    def test_fetch_jobs_with_filters(self):
+        url = reverse('job-list')  # Replace with appropriate name if you have
+        response = self.client.get(url, {'title': 'Test Job'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 1)
+
+    def test_fetch_jobs_not_found(self):
+        url = reverse('job-list')
+        response = self.client.get(url, {'title': 'Non-existent Job'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 0)
+
     def test_update_job(self):
         url = reverse('job-detail', args=[self.job.id])
         data = {'title': 'Updated Job Title', 'description': 'Updated description.'}

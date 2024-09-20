@@ -20,10 +20,26 @@ class JobView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-    def get(self, request, employer_id):
-        jobs = Job.objects.filter(employer_id=employer_id)
-        jobs_list = [{'id': job.id, 'title': job.title, 'description': job.description} for job in jobs]
-        return JsonResponse(jobs_list, safe=False, status=200)
+    def get(self, request, employer_id=None):
+        try:
+            filters = {}
+            if 'title' in request.GET:
+                filters['title__icontains'] = request.GET['title']
+            if 'location' in request.GET:
+                filters['location__icontains'] = request.GET['location']
+            if 'type' in request.GET:
+                filters['type'] = request.GET['type']
+            if 'posted_date' in request.GET:
+                filters['created_at__date'] = request.GET['posted_date']
+
+            if employer_id:
+                filters['employer_id'] = employer_id
+
+            jobs = Job.objects.filter(**filters)
+            jobs_list = [{'id': job.id, 'title': job.title, 'description': job.description, 'created_at': job.created_at} for job in jobs]
+            return JsonResponse(jobs_list, safe=False, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
 
     def put(self, request, job_id):
         try:
