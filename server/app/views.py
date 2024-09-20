@@ -20,8 +20,13 @@ class JobView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-    def get(self, request, employer_id=None):
+    def get(self, request, employer_id=None, job_id=None):
         try:
+            if job_id:
+                job = get_object_or_404(Job, id=job_id)
+                job_detail = {'id': job.id, 'title': job.title, 'description': job.description, 'created_at': job.created_at}
+                return JsonResponse(job_detail, status=200)
+
             filters = {}
             if 'title' in request.GET:
                 filters['title__icontains'] = request.GET['title']

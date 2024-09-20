@@ -57,3 +57,14 @@ class JobViewTests(APITestCase):
         url = reverse('job-detail', args=[999])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_job_detail(self):
+        url = reverse('job-detail', args=[self.job.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json()['title'], 'Test Job')
+
+    def test_get_job_detail_not_found(self):
+        url = reverse('job-detail', args=[999])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
