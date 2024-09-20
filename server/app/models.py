@@ -18,3 +18,12 @@ class JobApplication(models.Model):
 
     def __str__(self):
         return f"Application for {self.job.title} by Seeker {self.seeker_id}"
+
+class JobSeekerProfile(models.Model):
+    seeker_id = models.AutoField(primary_key=True)
+    work_history = models.TextField()
+    skills = models.CharField(max_length=255)
+    education = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"Profile of Seeker {self.seeker_id}"

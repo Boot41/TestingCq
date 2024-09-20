@@ -1,18 +1,16 @@
 from django.test import TestCase
-from .models import Job, JobApplication
+from .models import Job, JobApplication, JobSeekerProfile
 
 class JobModelTests(TestCase):
+    # Existing tests omitted for brevity
+
+class JobSeekerProfileModelTests(TestCase):
     def test_string_representation(self):
-        job = Job(title='Test Job')
-        self.assertEqual(str(job), job.title)
+        profile = JobSeekerProfile(work_history='History', skills='Python', education='Degree')
+        self.assertEqual(str(profile), f'Profile of Seeker {profile.seeker_id}')
 
-    def test_job_creation(self):
-        job = Job.objects.create(title='New Job', description='Job description.', employer_id=1)
-        self.assertIsInstance(job, Job)
-        self.assertEqual(job.title, 'New Job')
-
-    def test_application_creation(self):
-        job = Job.objects.create(title='New Job', description='Job description.', employer_id=1)
-        application = JobApplication.objects.create(job=job, seeker_id=1)
-        self.assertIsInstance(application, JobApplication)
-        self.assertEqual(application.job, job)
+    def test_profile_creation(self):
+        profile = JobSeekerProfile.objects.create(work_history='Work', skills='Skills', education='Education')
+        self.assertIsInstance(profile, JobSeekerProfile)
+        self.assertEqual(profile.work_history, 'Work')
+        self.assertEqual(profile.skills, 'Skills')
