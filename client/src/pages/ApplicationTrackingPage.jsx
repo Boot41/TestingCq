@@ -1,88 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
+import ApplicationStatusTracker from './ApplicationStatusTracker';
+import Modal from './Modal'; // Assuming a Modal component is created
 
 const ApplicationTrackingPage = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleWithdrawClick = () => {
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleConfirmWithdrawal = () => {
+    // Logic to handle application withdrawal
+    setModalOpen(false);
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-white">
-      <Header />
-      <main className="flex-grow p-4">
-        <ApplicationStatusTracker />
+    <div className="flex flex-col min-h-screen">
+      <header className="bg-blue-600 text-white p-4 fixed w-full z-10">
+        <nav>
+          <ul className="flex space-x-4">
+            <li><a href="#status" className="hover:underline">Application Status</a></li>
+            <li><a href="#withdraw" className="hover:underline">Withdraw Application</a></li>
+          </ul>
+        </nav>
+      </header>
+      <main className="flex-1 mt-16 p-4">
+        <ApplicationStatusTracker withdrawButtonClick={handleWithdrawClick} />
+        {isModalOpen && (
+          <Modal onClose={handleCloseModal} onConfirm={handleConfirmWithdrawal}>
+            <h2 className="text-lg">Confirm Withdrawal</h2>
+            <p>Are you sure you want to withdraw your application?</p>
+            <button onClick={handleConfirmWithdrawal} className="bg-red-600 text-white py-2 px-4 mt-2">Yes, Withdraw</button>
+            <button onClick={handleCloseModal} className="bg-gray-300 text-black py-2 px-4 mt-2">Cancel</button>
+          </Modal>
+        )}
       </main>
-      <Footer />
     </div>
   );
-};
-
-const Header = () => {
-  return (
-    <header className="bg-blue-600 text-white p-4">
-      <h1 className="text-lg font-bold">Application Tracking</h1>
-      <nav>
-        <ul className="flex space-x-4">
-          <li><a href="#jobs" className="hover:underline focus:outline-none" aria-label="Job Seekers Navigation">Jobs</a></li>
-          <li><a href="#profile" className="hover:underline focus:outline-none" aria-label="Profile Navigation">Profile</a></li>
-        </ul>
-      </nav>
-    </header>
-  );
-};
-
-const ApplicationStatusTracker = () => {
-  const applications = [
-    { id: 1, title: 'Frontend Developer', status: 'Interview', details: 'Interview scheduled on 21st Oct.' },
-    { id: 2, title: 'Backend Developer', status: 'Applied', details: 'Application submitted on 15th Oct.' },
-  ];
-
-  return (
-    <div className="overflow-x-auto">
-      <table className="hidden md:table w-full">
-        <thead>
-          <tr>
-            <th className="border-b">Job Title</th>
-            <th className="border-b">Status</th>
-            <th className="border-b">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {applications.map(app => (
-            <tr key={app.id}>
-              <td className="border-b p-2">{app.title}</td>
-              <td className="border-b p-2">{app.status}</td>
-              <td className="border-b p-2">
-                <button className="text-blue-500 hover:underline" onClick={() => handleEdit(app.id)}>Edit</button>
-                <button className="text-blue-500 hover:underline" onClick={() => handleViewDetails(app.id)}>View Details</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="md:hidden">
-        {applications.map(app => (
-          <div key={app.id} className="border rounded p-4 mb-4">
-            <h2 className="font-bold">{app.title}</h2>
-            <p>Status: {app.status}</p>
-            <button className="text-blue-500 hover:underline" onClick={() => handleEdit(app.id)}>Edit</button>
-            <button className="text-blue-500 hover:underline" onClick={() => handleViewDetails(app.id)}>View Details</button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const Footer = () => {
-  return (
-    <footer className="bg-gray-800 text-white p-4">
-      <p>&copy; 2023 Job Tracker</p>
-    </footer>
-  );
-};
-
-const handleEdit = (id) => {
-  // Logic to open edit modal
-};
-
-const handleViewDetails = (id) => {
-  // Logic to open details modal
 };
 
 export default ApplicationTrackingPage;
