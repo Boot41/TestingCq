@@ -1,70 +1,55 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from .models import Job
+from .models import Job, JobApplication
 import json
 
 class JobViewTests(APITestCase):
     def setUp(self):
         self.job = Job.objects.create(title='Test Job', description='This is a test job description.', employer_id=1)
+        self.seeker_id = 1
+        self.application = JobApplication.objects.create(job=self.job, seeker_id=self.seeker_id)
 
-    def test_create_job(self):
-        url = reverse('job-list')  # assuming 'job-list' url name
-        data = {'title': 'New Job', 'description': 'New job description.', 'employer_id': 1}
+    def test_apply_for_job(self):
+        url = reverse('job-apply', args=[self.job.id])
+        data = {'seeker_id': self.seeker_id}
         response = self.client.post(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertTrue('job_id' in response.json())
+        self.assertTrue('application_id' in response.json())
 
-    def test_fetch_jobs_by_employer(self):
-        url = reverse('job-list-by-employer', args=[1])  # assuming you have this name
+    def test_track_applications(self):
+        url = reverse('job-seeker-applications', args=[self.seeker_id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertGreater(len(response.json()), 0)  # ensure there's at least one job
+        self.assertGreater(len(response.json()), 0)  # should return the created application
 
-    def test_fetch_jobs_with_filters(self):
-        url = reverse('job-list')  # Replace with appropriate name if you have
-        response = self.client.get(url, {'title': 'Test Job'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 1)
-
-    def test_fetch_jobs_not_found(self):
-        url = reverse('job-list')
-        response = self.client.get(url, {'title': 'Non-existent Job'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json()), 0)
-
-    def test_update_job(self):
-        url = reverse('job-detail', args=[self.job.id])
-        data = {'title': 'Updated Job Title', 'description': 'Updated description.'}
+    def test_update_application(self):
+        url = reverse('job-apply', args=[self.application.id])
+        data = {'status': 'accepted'}
         response = self.client.put(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.job.refresh_from_db()
-        self.assertEqual(self.job.title, 'Updated Job Title')
+        self.application.refresh_from_db()
+        self.assertEqual(self.application.status, 'accepted')
 
-    def test_delete_job(self):
-        url = reverse('job-detail', args=[self.job.id])
+    def test_withdraw_application(self):
+        url = reverse('job-apply', args=[self.application.id])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Job.objects.filter(id=self.job.id).exists())
+        self.assertFalse(JobApplication.objects.filter(id=self.application.id).exists())
 
-    def test_update_job_not_found(self):
-        url = reverse('job-detail', args=[999])
-        data = {'title': 'Updated Job Title', 'description': 'Updated description.'}
+    def test_apply_for_non_existent_job(self):
+        url = reverse('job-apply', args=[999])  # Non-existent job
+        data = {'seeker_id': self.seeker_id}
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_non_existent_application(self):
+        url = reverse('job-apply', args=[999])  # Non-existent application
+        data = {'status': 'accepted'}
         response = self.client.put(url, data=json.dumps(data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_delete_job_not_found(self):
-        url = reverse('job-detail', args=[999])
+    def test_withdraw_non_existent_application(self):
+        url = reverse('job-apply', args=[999])  # Non-existent application
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_get_job_detail(self):
-        url = reverse('job-detail', args=[self.job.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()['title'], 'Test Job')
-
-    def test_get_job_detail_not_found(self):
-        url = reverse('job-detail', args=[999])
-        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
