@@ -7,6 +7,6 @@ class JobModelTests(TestCase):
         self.assertEqual(str(job), job.title)
 
     def test_job_creation(self):
-        job = Job.objects.create(title='New Job', description='Job description.')
+        job = Job.objects.create(title='New Job', description='Job description.', employer_id=1)
         self.assertIsInstance(job, Job)
         self.assertEqual(job.title, 'New Job')

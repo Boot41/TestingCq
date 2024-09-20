@@ -8,6 +8,23 @@ import json
 
 @method_decorator(csrf_exempt, name='dispatch')
 class JobView(View):
+    def post(self, request):
+        try:
+            job_data = json.loads(request.body)
+            job = Job.objects.create(
+                title=job_data['title'],
+                description=job_data['description'],
+                employer_id=job_data['employer_id']
+            )
+            return JsonResponse({'message': 'Job created successfully', 'job_id': job.id}, status=201)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    def get(self, request, employer_id):
+        jobs = Job.objects.filter(employer_id=employer_id)
+        jobs_list = [{'id': job.id, 'title': job.title, 'description': job.description} for job in jobs]
+        return JsonResponse(jobs_list, safe=False, status=200)
+
     def put(self, request, job_id):
         try:
             job_data = json.loads(request.body)
