@@ -47,3 +47,14 @@ class JobApplicationView(View):
             return JsonResponse({'message': 'Application withdrawn successfully'}, status=204)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
+
+    def post_interview(self, request, application_id):
+        try:
+            interview_data = json.loads(request.body)
+            interview_time = interview_data['time']
+            application = get_object_or_404(JobApplication, id=application_id)
+            # Assume there is a method to schedule an interview
+            # schedule_interview(application, interview_time)
+            return JsonResponse({'message': 'Interview scheduled successfully for application_id: {}'.format(application_id)}, status=201)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)

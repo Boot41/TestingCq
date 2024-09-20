@@ -53,3 +53,22 @@ class JobViewTests(APITestCase):
         url = reverse('job-apply', args=[999])  # Non-existent application
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_schedule_interview(self):
+        url = reverse('schedule-interview', args=[self.application.id])
+        data = {'time': '2023-10-05T10:00:00Z'}  # Example time
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.json()['message'], 'Interview scheduled successfully for application_id: {}'.format(self.application.id))
+
+    def test_schedule_interview_invalid_application(self):
+        url = reverse('schedule-interview', args=[999])  # Non-existent application
+        data = {'time': '2023-10-05T10:00:00Z'}
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_schedule_interview_missing_time(self):
+        url = reverse('schedule-interview', args=[self.application.id])
+        data = {}  # Missing time
+        response = self.client.post(url, data=json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
