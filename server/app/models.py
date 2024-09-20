@@ -9,3 +9,12 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title
+
+class JobApplication(models.Model):
+    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    seeker_id = models.IntegerField()  # To link the application to a job seeker
+    status = models.CharField(max_length=50, default='pending')  # e.g., pending, accepted, rejected
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Application for {self.job.title} by Seeker {self.seeker_id}"
