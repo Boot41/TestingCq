@@ -22,10 +22,10 @@ class JobApplicationView(View):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
-    def get(self, request, seeker_id):
+    def get(self, request, job_id):
         try:
-            applications = JobApplication.objects.filter(seeker_id=seeker_id)
-            applications_list = [{'job_id': app.job.id, 'status': app.status, 'applied_at': app.applied_at} for app in applications]
+            applications = JobApplication.objects.filter(job_id=job_id)
+            applications_list = [{'seeker_id': app.seeker_id, 'status': app.status, 'applied_at': app.applied_at} for app in applications]
             return JsonResponse(applications_list, safe=False, status=200)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)

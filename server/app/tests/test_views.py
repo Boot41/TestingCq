@@ -17,8 +17,8 @@ class JobViewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue('application_id' in response.json())
 
-    def test_track_applications(self):
-        url = reverse('job-seeker-applications', args=[self.seeker_id])
+    def test_fetch_applications_for_job(self):
+        url = reverse('job-applications', args=[self.job.id])
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertGreater(len(response.json()), 0)  # should return the created application
